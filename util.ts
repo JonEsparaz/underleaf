@@ -18,16 +18,18 @@ export async function download(
   Deno.writeFileSync("./.overleaf_download.zip", unit8arr);
 }
 
-export async function unzip(): Promise<void> {
+export async function unzip(tempDir: string): Promise<void> {
   const process = Deno.run({
     cmd: Deno.build.os === "windows"
       ? [
         "Expand-Archive",
         "./.overleaf_download.zip",
         "-DestinationPath ",
-        "./.overleaf_download",
+        tempDir,
       ]
-      : ["unzip", "./.overleaf_download.zip", "-d", "./.overleaf_download"],
+      : ["unzip", "./.overleaf_download.zip", "-d", tempDir],
+    stdout: "piped",
+    stderr: "piped",
   });
 
   const { success } = await process.status();
@@ -65,7 +67,8 @@ export async function login(): Promise<string> {
       resCookie.indexOf(searchString) + searchString.length,
     );
     const expires = resCookieTail.substring(0, resCookieTail.indexOf(";"));
-    Deno.writeTextFile("./.overleaf_cookie.txt", cookie + "\n" + expires);
+
+    await Deno.writeTextFile(`${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`, cookie + "\n" + expires);
   }
 
   await browser.close();
@@ -76,11 +79,11 @@ export async function login(): Promise<string> {
 export async function getCookie(flags: Record<string, boolean | undefined>) {
   let cookie = "";
 
-  if (flags.login || flags.l) {
+  if (flags.login) {
     cookie = await login();
   } else {
     try {
-      const cookieData = await Deno.readTextFile("./.overleaf_cookie.txt");
+      const cookieData = await Deno.readTextFile(`${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`);
       const cookieDataArray = cookieData.split("\n");
       const oldCookie = cookieDataArray[0];
       const expires = new Date(cookieDataArray[1]);
@@ -88,8 +91,12 @@ export async function getCookie(flags: Record<string, boolean | undefined>) {
       if (expires > new Date()) {
         return oldCookie;
       }
-    } finally {
-      cookie = await login();
+    } catch (e) {
+      if (e instanceof Deno.errors.NotFound || e instanceof RangeError) {
+        cookie = await login();
+      } else {
+        console.log(e);
+      }
     }
   }
 
@@ -99,7 +106,7 @@ export async function getCookie(flags: Record<string, boolean | undefined>) {
 export async function getProjectId(flags: Record<string, boolean | undefined>) {
   let projectId = "";
 
-  if (!existsSync("./.overleaf_project.txt") || flags.project || flags.p) {
+  if (!existsSync("./.overleaf_project.txt") || flags.project) {
     projectId = await Input.prompt("Enter Overleaf project ID");
     Deno.writeTextFile("./.overleaf_project.txt", projectId);
   } else {

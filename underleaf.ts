@@ -2,13 +2,12 @@ import { parseFlags } from "https://deno.land/x/cliffy/flags/mod.ts";
 import { download, getCookie, getProjectId, unzip } from "./util.ts";
 
 async function main() {
-  const rmFlags = Deno.build.os === "windows" ? "-r" : "-rf";
-  Deno.run({
-    cmd: ["rm", rmFlags, "./.overleaf_download", "./.overleaf_download.zip"],
-  });
-  Deno.run({ cmd: ["mkdir", ".overleaf_download"] });
-
   const { flags } = parseFlags(Deno.args);
+
+  if (flags.help) {
+    console.log("help");
+    return;
+  }
 
   const cookie = await getCookie(flags);
   const projectId = await getProjectId(flags);
@@ -17,10 +16,13 @@ async function main() {
   await download(projectId, cookie);
 
   console.log("Unzipping project...\n");
-  unzip();
+  const tempDir = await Deno.makeTempDir();
+  await unzip(tempDir);
 
   console.log("Copying main.tex...\n");
-  Deno.run({ cmd: ["mv", "./.overleaf_download/main.tex", "."] });
+  Deno.copyFileSync(`${tempDir}/main.tex`, "./main.tex");
+
+  await Deno.remove("./.overleaf_download.zip");
 }
 
 if (import.meta.main) {
