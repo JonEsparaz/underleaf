@@ -68,7 +68,10 @@ export async function login(): Promise<string> {
     );
     const expires = resCookieTail.substring(0, resCookieTail.indexOf(";"));
 
-    await Deno.writeTextFile(`${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`, cookie + "\n" + expires);
+    Deno.writeTextFileSync(
+      `${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`,
+      cookie + "\n" + expires,
+    );
   }
 
   await browser.close();
@@ -83,7 +86,9 @@ export async function getCookie(flags: Record<string, boolean | undefined>) {
     cookie = await login();
   } else {
     try {
-      const cookieData = await Deno.readTextFile(`${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`);
+      const cookieData = Deno.readTextFileSync(
+        `${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`,
+      );
       const cookieDataArray = cookieData.split("\n");
       const oldCookie = cookieDataArray[0];
       const expires = new Date(cookieDataArray[1]);
@@ -106,11 +111,21 @@ export async function getCookie(flags: Record<string, boolean | undefined>) {
 export async function getProjectId(flags: Record<string, boolean | undefined>) {
   let projectId = "";
 
-  if (!existsSync("./.overleaf_project.txt") || flags.project) {
+  if (!existsSync("./.leafrc.json")) {
     projectId = await Input.prompt("Enter Overleaf project ID");
-    Deno.writeTextFile("./.overleaf_project.txt", projectId);
+    Deno.writeTextFileSync(
+      "./.leafrc.json",
+      JSON.stringify({ projectId }),
+    );
   } else {
-    projectId = await Deno.readTextFile("./.overleaf_project.txt");
+    const json = Deno.readTextFileSync("./.leafrc.json");
+    const config = JSON.parse(json);
+    projectId = config.projectId;
+    if (flags.project || !projectId) {
+      projectId = await Input.prompt("Enter Overleaf project ID");
+      config.projectId = projectId;
+      Deno.writeTextFileSync("./.leafrc.json", JSON.stringify(config));
+    }
   }
 
   return projectId;

@@ -38,9 +38,24 @@ _One way operation_. All edits need to be made on Overleaf, then downloaded onto
 your local machine for version control of other purposes. This tool cannot help
 push local changes back to Overleaf.
 
-_`main.tex` only_. All files will be downloaded and unzipped, but only
-`main.tex` will be copied into your working directory. I plan to upgrade this
-tool to handle copying multiple source files.
+_Limited support for files in folders_. All files on Overleaf will be
+downloaded, unzipped and copied into your current working directory. For
+example, if you the following project on Overleaf:
+
+```
+├── bar.tex
+└── folder
+    └── foo.tex
+```
+
+Running `underleaf` will produce the following:
+
+```
+├── bar.tex
+└── foo.tex
+```
+
+I plan on fixing this sometime in the future.
 
 ## License
 
