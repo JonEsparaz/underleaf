@@ -50,7 +50,7 @@ prompts, and add the pattern `*.png`.
 
 | Flag(s)           | Description                               |
 | ----------------- | ----------------------------------------- |
-| `--ignore`        | Add, delete or update ignore patters      |
+| `--ignore`        | Add, delete or update ignore patterns     |
 | `--ignore --list` | List the current set of ignore patterns   |
 | `--login`         | Force login and re-prompt for credentials |
 | `--project`       | Modify the project ID                     |
@@ -59,10 +59,10 @@ prompts, and add the pattern `*.png`.
 ## Limitations
 
 _One way operation_. All edits need to be made on Overleaf, then downloaded onto
-your local machine for version control of other purposes. This tool cannot help
+your local machine for version control or other purposes. This tool cannot help
 push local changes back to Overleaf.
 
-_No Windows support_. This tool does not currently support Windows. I recommend
+_No Windows support_. This tool does not work on Windows systems. I recommend
 using
 [Windows System for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 instead.
