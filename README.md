@@ -25,11 +25,7 @@ directory.
 - Install the
   [Deno runtime](https://deno.land/manual/getting_started/installation)
 - Run
-  `PUPPETEER_PRODUCT=chrome deno run -A --unstable https://deno.land/x/puppeteer@9.0.0/install.ts`
-  to cache the required version of Chromium
-- Run
-  `deno install -n underleaf --unstable --allow-env --allow-read --allow-write .\underleaf.ts`
-  to install the Underleaf CLI
+  `curl -s https://raw.githubusercontent.com/JonEsparaz/underleaf/main/install.sh | sh`
 
 ## Usage :computer:
 
