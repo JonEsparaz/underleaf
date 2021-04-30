@@ -1,0 +1,32 @@
+name: Deno Install
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }} # runs a test on Ubuntu and macOS
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: v1.x
+
+      - name: Install Chromium
+        env:
+          PUPPETEER_PRODUCT: chrome
+        run: deno run -A --unstable https://deno.land/x/puppeteer@9.0.0/install.ts 
+
+      - name: Install Underleaf
+        run: deno install -n underleaf --unstable --allow-env --allow-read --allow-write --allow-run --allow-net -f underleaf.ts
