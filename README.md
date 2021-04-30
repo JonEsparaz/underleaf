@@ -1,8 +1,7 @@
 # Underleaf :fallen_leaf:
 
 A Deno-powered CLI tool for downloading source files from
-[Overleaf](https://www.overleaf.com/) projects. This project is current a work
-in progress (WIP) - the first stable release is coming soon.
+[Overleaf](https://www.overleaf.com/) projects.
 
 ## Why?
 
@@ -40,21 +39,22 @@ Additionally, you will be prompted for your Overleaf project's ID.
 
 ### Ignore patterns
 
-Running `underleaf --ignore` allows you to specify ignore patterns to prevent certain files and/or directories from being expanded into your working directory.
+Running `underleaf --ignore` allows you to specify ignore patterns to prevent
+certain files and/or directories that exist on Overleaf from being expanded into
+your working directory.
 
-Example: to ignore `.png` files, run `underleaf --ignore`, follow the prompts and add the pattern `*.png`.
+Example: to ignore all `.png` files, run `underleaf --ignore`, follow the
+prompts, and add the pattern `*.png`.
 
 ### Flags
 
-- `--ignore`: add, delete or update ignore patters in `.leafrc.json`
-
-- `--ignore --list`: list the current set of ignore patterns
-
-- `--login`: force login to refresh the cookie
-
-- `--project`: modify the project ID
-
-- `--help`: view a summary of available flags
+| Flag(s)           | Description                                            |
+| ----------------- | ------------------------------------------------------ |
+| `--ignore`        | Add, delete or update ignore patters in `.leafrc.json` |
+| `--ignore --list` | List the current set of ignore patterns                |
+| `--login`         | Force login and reprompt for credentials               |
+| `--project`       | Modify the project ID                                  |
+| `--help`          | View a summary of available flags                      |
 
 ## Limitations
 
