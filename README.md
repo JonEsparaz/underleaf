@@ -29,11 +29,32 @@ directory.
 
 ## Usage :computer:
 
-todo...
+Move into the directory where you want to download the source files, then run
+`underleaf`.
+
+The first time you run `underleaf`, you will be prompted for your Overleaf login
+credentials. If your session cookie has expired, you will be automatically
+reprompted for your credentials.
+
+Additionally, you will be prompted for your Overleaf project's ID.
+
+### Ignoring files
+
+Example: you might want to ignore `.png` files. Running `underleaf --ignore` and
+adding the pattern `*.png` will prevent all `.png` files in your Overleaf
+project from being expanded locally.
 
 ### Flags
 
-todo...
+- `--ignore`: add, delete or update ignore patters in `.leafrc.json`
+
+- `--ignore --list`: list the current set of ignore patterns
+
+- `--login`: force login to refresh the cookie
+
+- `--project`: modify the project ID
+
+- `--help`: view a summary of available flags
 
 ## Limitations
 

@@ -176,7 +176,7 @@ async function ignoreConfig(list?: boolean) {
       options: [
         { name: "Add", value: "Add" },
         { name: "Delete", value: "Delete" },
-        { name: "Edit", value: "Edit" },
+        { name: "Update", value: "Update" },
       ],
     });
 
@@ -195,10 +195,10 @@ async function ignoreConfig(list?: boolean) {
 
       if (option === "Delete") {
         config.ignore.splice(idx, 1);
-      } else if (option === "Edit") {
+      } else if (option === "Update") {
         const xEdited = await Input.prompt({
           default: x,
-          message: "Editing",
+          message: "Updating pattern",
         });
         config.ignore[idx] = xEdited;
       }
@@ -217,8 +217,12 @@ async function main() {
   const { flags } = parseFlags(Deno.args);
 
   if (flags.help) {
-    console.log("help");
-    return;
+    console.log(
+      "--ignore: add, delete or update ignore patters in `.leafrc.json`",
+    );
+    console.log("`--ignore --list: list the current set of ignore patterns");
+    console.log("--login: force login to refresh the cookie");
+    console.log("--project: modify the project ID");
   }
 
   if (flags.ignore) {
