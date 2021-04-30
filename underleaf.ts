@@ -214,7 +214,7 @@ async function main() {
   const { flags } = parseFlags(Deno.args);
 
   if (flags.help) {
-    console.log("--ignore: Add, delete or update ignore patters\n");
+    console.log("--ignore: Add, delete or update ignore patterns\n");
     console.log("--ignore --list: List the current set of ignore patterns\n");
     console.log("--login: Force login and re-prompt for credentials\n");
     console.log("--project: Modify the project ID\n");
