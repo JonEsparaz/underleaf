@@ -33,7 +33,7 @@ Move into the directory where you want to download the source files, then run
 
 The first time you run `underleaf`, you will be prompted for your Overleaf login
 credentials. If your session cookie has expired, you will be automatically
-reprompted for your credentials.
+re-prompted for your credentials.
 
 Additionally, you will be prompted for your Overleaf project's ID.
 
@@ -48,13 +48,13 @@ prompts, and add the pattern `*.png`.
 
 ### Flags
 
-| Flag(s)           | Description                                            |
-| ----------------- | ------------------------------------------------------ |
-| `--ignore`        | Add, delete or update ignore patters in `.leafrc.json` |
-| `--ignore --list` | List the current set of ignore patterns                |
-| `--login`         | Force login and reprompt for credentials               |
-| `--project`       | Modify the project ID                                  |
-| `--help`          | View a summary of available flags                      |
+| Flag(s)           | Description                               |
+| ----------------- | ----------------------------------------- |
+| `--ignore`        | Add, delete or update ignore patters      |
+| `--ignore --list` | List the current set of ignore patterns   |
+| `--login`         | Force login and re-prompt for credentials |
+| `--project`       | Modify the project ID                     |
+| `--help`          | View a summary of available flags         |
 
 ## Limitations
 

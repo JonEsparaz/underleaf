@@ -217,12 +217,11 @@ async function main() {
   const { flags } = parseFlags(Deno.args);
 
   if (flags.help) {
-    console.log(
-      "--ignore: add, delete or update ignore patters in `.leafrc.json`",
-    );
-    console.log("`--ignore --list: list the current set of ignore patterns");
-    console.log("--login: force login to refresh the cookie");
-    console.log("--project: modify the project ID");
+    console.log("--ignore: Add, delete or update ignore patters");
+    console.log("`--ignore --list: List the current set of ignore patterns");
+    console.log("--login: Force login and re-prompt for credentials");
+    console.log("--project: Modify the project ID");
+    return;
   }
 
   if (flags.ignore) {
