@@ -18,7 +18,6 @@ async function download(
   projectId: string,
   cookie: string,
 ): Promise<void> {
-  console.log("Unzipping project...");
   const project = await fetch(
     `https://www.overleaf.com/project/${projectId}/download/zip`,
     { headers: { cookie } },
@@ -30,7 +29,6 @@ async function download(
 }
 
 async function unzip(): Promise<void> {
-  console.log("Downloading project...");
   const json = Deno.readTextFileSync("./.leafrc.json");
   const config: UnderleafConfig = JSON.parse(json);
 
@@ -56,7 +54,6 @@ async function unzip(): Promise<void> {
   if (success) {
     const raw = await process.output();
     new TextDecoder().decode(raw);
-    await Deno.remove("./.overleaf_download.zip");
   }
 }
 
@@ -233,6 +230,8 @@ async function main() {
   const projectId = await getProjectId(flags);
   await download(projectId, cookie);
   await unzip();
+
+  await Deno.remove("./.overleaf_download.zip");
 }
 
 if (import.meta.main) {
