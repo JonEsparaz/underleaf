@@ -17,7 +17,7 @@ type Flags = Record<string, boolean | undefined>;
 async function download(
   projectId: string,
   cookie: string,
-): Promise<void> {
+): Promise<string> {
   const project = await fetch(
     `https://www.overleaf.com/project/${projectId}/download/zip`,
     { headers: { cookie } },
@@ -25,14 +25,16 @@ async function download(
   const blob = await project.blob();
   const buffer = await blob.arrayBuffer();
   const unit8arr = new Buffer(buffer).bytes();
-  Deno.writeFileSync("./.overleaf_download.zip", unit8arr);
+  const zip = await Deno.makeTempFile({ suffix: ".zip" });
+  await Deno.writeFile(zip, unit8arr);
+  return zip;
 }
 
-async function unzip(): Promise<void> {
-  const json = Deno.readTextFileSync("./.leafrc.json");
+async function unzip(zip: string): Promise<void> {
+  const json = await Deno.readTextFile("./.leafrc.json");
   const config: UnderleafConfig = JSON.parse(json);
 
-  const cmd = ["unzip", "./.overleaf_download.zip"];
+  const cmd = ["unzip", zip, "-u"];
 
   if (config?.ignore?.length) {
     cmd.push("-x");
@@ -46,8 +48,6 @@ async function unzip(): Promise<void> {
     stdout: "piped",
     stderr: "piped",
   });
-
-  Deno.writeTextFileSync("./.leafrc.json", JSON.stringify(config));
 
   const { success } = await process.status();
 
@@ -85,7 +85,7 @@ async function login(): Promise<string> {
     );
     const expires = resCookieTail.substring(0, resCookieTail.indexOf(";"));
 
-    Deno.writeTextFileSync(
+    await Deno.writeTextFile(
       `${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`,
       cookie + "\n" + expires,
     );
@@ -103,7 +103,7 @@ async function getCookie(flags: Flags) {
     cookie = await login();
   } else {
     try {
-      const cookieData = Deno.readTextFileSync(
+      const cookieData = await Deno.readTextFile(
         `${Deno.env.get("HOME")}/.deno/overleaf_cookie.txt`,
       );
       const cookieDataArray = cookieData.split("\n");
@@ -130,18 +130,18 @@ async function getProjectId(flags: Flags) {
 
   if (!existsSync("./.leafrc.json")) {
     projectId = await Input.prompt("Enter Overleaf project ID");
-    Deno.writeTextFileSync(
+    await Deno.writeTextFile(
       "./.leafrc.json",
       JSON.stringify({ projectId }),
     );
   } else {
-    const json = Deno.readTextFileSync("./.leafrc.json");
+    const json = await Deno.readTextFile("./.leafrc.json");
     const config: UnderleafConfig = JSON.parse(json);
     projectId = config.projectId ?? "";
     if (flags.project || !projectId) {
       projectId = await Input.prompt("Enter Overleaf project ID");
       config.projectId = projectId;
-      Deno.writeTextFileSync("./.leafrc.json", JSON.stringify(config));
+      await Deno.writeTextFile("./.leafrc.json", JSON.stringify(config));
     }
   }
 
@@ -149,7 +149,7 @@ async function getProjectId(flags: Flags) {
 }
 
 async function ignoreConfig(list?: boolean) {
-  const json = Deno.readTextFileSync("./.leafrc.json");
+  const json = await Deno.readTextFile("./.leafrc.json");
   const config: UnderleafConfig = JSON.parse(json);
   if (!config.ignore) {
     config.ignore = [];
@@ -207,17 +207,17 @@ async function ignoreConfig(list?: boolean) {
     }
   }
 
-  Deno.writeTextFileSync("./.leafrc.json", JSON.stringify(config));
+  await Deno.writeTextFile("./.leafrc.json", JSON.stringify(config));
 }
 
 async function main() {
   const { flags } = parseFlags(Deno.args);
 
   if (flags.help) {
-    console.log("--ignore: Add, delete or update ignore patters");
-    console.log("`--ignore --list: List the current set of ignore patterns");
-    console.log("--login: Force login and re-prompt for credentials");
-    console.log("--project: Modify the project ID");
+    console.log("--ignore: Add, delete or update ignore patters\n");
+    console.log("--ignore --list: List the current set of ignore patterns\n");
+    console.log("--login: Force login and re-prompt for credentials\n");
+    console.log("--project: Modify the project ID\n");
     return;
   }
 
@@ -228,10 +228,8 @@ async function main() {
 
   const cookie = await getCookie(flags);
   const projectId = await getProjectId(flags);
-  await download(projectId, cookie);
-  await unzip();
-
-  await Deno.remove("./.overleaf_download.zip");
+  const zip = await download(projectId, cookie);
+  await unzip(zip);
 }
 
 if (import.meta.main) {
