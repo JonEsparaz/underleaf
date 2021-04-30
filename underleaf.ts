@@ -1,18 +1,24 @@
-import { parseFlags } from "https://deno.land/x/cliffy/flags/mod.ts";
-import { Confirm } from "https://deno.land/x/cliffy/prompt/confirm.ts";
-import {
-  Select,
-} from "https://deno.land/x/cliffy/prompt/select.ts";
-import { existsSync } from "https://deno.land/std/fs/mod.ts";
 import { Buffer } from "https://deno.land/std/io/buffer.ts";
+import { existsSync } from "https://deno.land/std/fs/mod.ts";
 import puppeteer from "https://deno.land/x/puppeteer@9.0.0/mod.ts";
+import { parseFlags } from "https://deno.land/x/cliffy/flags/mod.ts";
 import { Input } from "https://deno.land/x/cliffy/prompt/input.ts";
 import { Secret } from "https://deno.land/x/cliffy/prompt/secret.ts";
+import { Confirm } from "https://deno.land/x/cliffy/prompt/confirm.ts";
+import { Select } from "https://deno.land/x/cliffy/prompt/select.ts";
+
+type UnderleafConfig = {
+  projectId?: string;
+  ignore?: Array<string>;
+};
+
+type Flags = Record<string, boolean | undefined>;
 
 async function download(
   projectId: string,
   cookie: string,
 ): Promise<void> {
+  console.log("Unzipping project...");
   const project = await fetch(
     `https://www.overleaf.com/project/${projectId}/download/zip`,
     { headers: { cookie } },
@@ -23,40 +29,34 @@ async function download(
   Deno.writeFileSync("./.overleaf_download.zip", unit8arr);
 }
 
-async function unzip(tempDir: string): Promise<void> {
+async function unzip(): Promise<void> {
+  console.log("Downloading project...");
   const json = Deno.readTextFileSync("./.leafrc.json");
-  const config = JSON.parse(json);
+  const config: UnderleafConfig = JSON.parse(json);
 
-  const winCmd = [
-    "Expand-Archive",
-    "./.overleaf_download.zip",
-    "-DestinationPath ",
-    tempDir,
-  ];
+  const cmd = ["unzip", "./.overleaf_download.zip"];
 
-  const linuxCmd = ["unzip", "./.overleaf_download.zip"];
-
-  if (config.ignore.length) {
-    linuxCmd.push("-x");
-    config.ignore.forEach((pattern: string) => {
-      linuxCmd.push(pattern)
+  if (config?.ignore?.length) {
+    cmd.push("-x");
+    config.ignore.forEach((pattern) => {
+      cmd.push(pattern);
     });
   }
 
   const process = Deno.run({
-    cmd: Deno.build.os === "windows" ? winCmd : linuxCmd,
+    cmd,
     stdout: "piped",
     stderr: "piped",
   });
 
   Deno.writeTextFileSync("./.leafrc.json", JSON.stringify(config));
 
-  // need this on windows?
   const { success } = await process.status();
 
   if (success) {
     const raw = await process.output();
     new TextDecoder().decode(raw);
+    await Deno.remove("./.overleaf_download.zip");
   }
 }
 
@@ -99,7 +99,7 @@ async function login(): Promise<string> {
   return cookie;
 }
 
-async function getCookie(flags: Record<string, boolean | undefined>) {
+async function getCookie(flags: Flags) {
   let cookie = "";
 
   if (flags.login) {
@@ -128,7 +128,7 @@ async function getCookie(flags: Record<string, boolean | undefined>) {
   return cookie;
 }
 
-async function getProjectId(flags: Record<string, boolean | undefined>) {
+async function getProjectId(flags: Flags) {
   let projectId = "";
 
   if (!existsSync("./.leafrc.json")) {
@@ -139,8 +139,8 @@ async function getProjectId(flags: Record<string, boolean | undefined>) {
     );
   } else {
     const json = Deno.readTextFileSync("./.leafrc.json");
-    const config = JSON.parse(json);
-    projectId = config.projectId;
+    const config: UnderleafConfig = JSON.parse(json);
+    projectId = config.projectId ?? "";
     if (flags.project || !projectId) {
       projectId = await Input.prompt("Enter Overleaf project ID");
       config.projectId = projectId;
@@ -152,13 +152,8 @@ async function getProjectId(flags: Record<string, boolean | undefined>) {
 }
 
 async function ignoreConfig(list?: boolean) {
-  if (Deno.build.os === "windows") {
-    console.log("This feature is not supported on Windows.");
-    return;
-  }
-  
   const json = Deno.readTextFileSync("./.leafrc.json");
-  const config = JSON.parse(json);
+  const config: UnderleafConfig = JSON.parse(json);
   if (!config.ignore) {
     config.ignore = [];
   }
@@ -233,15 +228,8 @@ async function main() {
 
   const cookie = await getCookie(flags);
   const projectId = await getProjectId(flags);
-
-  console.log("Downloading project...");
   await download(projectId, cookie);
-
-  console.log("Unzipping project...");
-  const tempDir = await Deno.makeTempDir();
-  await unzip(tempDir);
-
-  await Deno.remove("./.overleaf_download.zip");
+  await unzip();
 }
 
 if (import.meta.main) {

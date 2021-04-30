@@ -21,10 +21,15 @@ directory.
 
 ## Installation :gear:
 
-- Install [`unzip`](https://linux.die.net/man/1/unzip) (Linux/MacOS only)
+- Install [`unzip`](https://linux.die.net/man/1/unzip)
 - Install the
   [Deno runtime](https://deno.land/manual/getting_started/installation)
-- Run `install script`
+- Run
+  `PUPPETEER_PRODUCT=chrome deno run -A --unstable https://deno.land/x/puppeteer@9.0.0/install.ts`
+  to cache the required version of Chromium
+- Run
+  `deno install -n underleaf --unstable --allow-env --allow-read --allow-write .\underleaf.ts`
+  to install the Underleaf CLI
 
 ## Usage :computer:
 
@@ -39,6 +44,11 @@ todo...
 _One way operation_. All edits need to be made on Overleaf, then downloaded onto
 your local machine for version control of other purposes. This tool cannot help
 push local changes back to Overleaf.
+
+_No Windows support_. This tool does not currently support Windows. I recommend
+using
+[Windows System for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+instead.
 
 ## License
 
