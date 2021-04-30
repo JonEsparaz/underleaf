@@ -38,11 +38,11 @@ reprompted for your credentials.
 
 Additionally, you will be prompted for your Overleaf project's ID.
 
-### Ignoring files
+### Ignore patterns
 
-Example: you might want to ignore `.png` files. Running `underleaf --ignore` and
-adding the pattern `*.png` will prevent all `.png` files in your Overleaf
-project from being expanded locally.
+Running `underleaf --ignore` allows you to specify ignore patterns to prevent certain files and/or directories from being expanded into your working directory.
+
+Example: to ignore `.png` files, run `underleaf --ignore`, follow the prompts and add the pattern `*.png`.
 
 ### Flags
 
