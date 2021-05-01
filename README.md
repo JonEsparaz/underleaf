@@ -62,10 +62,9 @@ _One way operation_. All edits need to be made on Overleaf, then downloaded onto
 your local machine for version control or other purposes. This tool cannot help
 push local changes back to Overleaf.
 
-_No Windows support_. This tool does not work on Windows systems. I recommend
-using
-[Windows System for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-instead.
+_No Windows support_. This tool does not work in Windows Powershell or CMD. 
+I recommend using
+[Windows System for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ## License
 
