@@ -112,6 +112,8 @@ async function getCookie(flags: Flags) {
 
       if (expires > new Date()) {
         return oldCookie;
+      } else {
+        cookie = await login();
       }
     } catch (e) {
       if (e instanceof Deno.errors.NotFound || e instanceof RangeError) {
