@@ -220,6 +220,7 @@ async function main() {
     console.log("--ignore --list: List the current set of ignore patterns\n");
     console.log("--login: Force login and re-prompt for credentials\n");
     console.log("--project: Modify the project ID\n");
+    console.log("--version: Check what version is currently installed\n");
     return;
   }
 

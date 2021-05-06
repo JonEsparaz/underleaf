@@ -25,6 +25,7 @@ directory.
   [Deno runtime](https://deno.land/manual/getting_started/installation)
 - Run
   `curl -s https://raw.githubusercontent.com/JonEsparaz/underleaf/main/install.sh | sh`
+- Run `underleaf --version` to check your installation
 
 ## Usage :computer:
 
@@ -55,6 +56,7 @@ prompts, and add the pattern `*.png`.
 | `--login`         | Force login and re-prompt for credentials |
 | `--project`       | Modify the project ID                     |
 | `--help`          | View a summary of available flags         |
+| `--version`       | Check what version is currently installed |
 
 ## Limitations
 
@@ -62,8 +64,8 @@ _One way operation_. All edits need to be made on Overleaf, then downloaded onto
 your local machine for version control or other purposes. This tool cannot help
 push local changes back to Overleaf.
 
-_No Windows support_. This tool does not work in Windows Powershell or CMD. 
-I recommend using
+_No Windows support_. This tool does not work in Windows Powershell or CMD. I
+recommend using
 [Windows System for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ## License
