@@ -223,6 +223,11 @@ async function main() {
     return;
   }
 
+  if (flags.version) {
+    console.log("v1.0.0");
+    return;
+  }
+
   if (flags.ignore) {
     await ignoreConfig(flags.list);
     return;
