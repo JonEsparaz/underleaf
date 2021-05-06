@@ -34,7 +34,7 @@ async function unzip(zip: string): Promise<void> {
   const json = await Deno.readTextFile("./.leafrc.json");
   const config: UnderleafConfig = JSON.parse(json);
 
-  const cmd = ["unzip", zip, "-u"];
+  const cmd = ["unzip", "-o", zip];
 
   if (config?.ignore?.length) {
     cmd.push("-x");
